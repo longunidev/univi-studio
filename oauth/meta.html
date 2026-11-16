@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Connecting · UniVi Studio</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+  <h1>Connecting to UniVi Studio…</h1>
+  <p id="msg" class="muted">Returning to the app on your computer.</p>
+</main>
+<script>
+// Facebook Login sends you here after you approve. The part of "state" after the last dot is the address of
+// UniVi Studio on your own computer; this page forwards the login result there. It only ever forwards to
+// http://localhost or http://127.0.0.1, so it cannot send the code anywhere else.
+(function () {
+  var q = new URLSearchParams(location.search);
+  var state = q.get("state") || "";
+  var dot = state.lastIndexOf(".");
+  var origin = "";
+  try {
+    var b64 = state.slice(dot + 1).replace(/-/g, "+").replace(/_/g, "/");
+    origin = dot > 0 ? atob(b64 + "===".slice((b64.length + 3) % 4)) : "";
+  } catch (e) {}
+  if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(origin)) {
+    document.getElementById("msg").textContent = "This link is not valid. Open UniVi Studio and click Connect again.";
+    return;
+  }
+  location.replace(origin + "/api/social/oauth/meta/callback" + location.search);
+})();
+</script>
+</body>
+</html>
